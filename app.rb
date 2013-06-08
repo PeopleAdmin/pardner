@@ -3,12 +3,21 @@ require 'bundler'
 Bundler.require
 
 get '/' do
-  command = "git log --oneline --first-parent origin/production..origin/master"
-  run_shell command
+  "<a href='/pending/production/master'>Master</a><br>
+  <a href='/pending/production/release'>Release</a>"
+end
+
+get '/pending/:from/:to' do
+  commits params[:from], params[:to]
 end
 
 
 private
+
+def commits from, to
+  command = "git log --oneline --first-parent origin/#{from}..origin/#{to}"
+  run_shell command
+end
 
 def run_shell command
   out = ""
