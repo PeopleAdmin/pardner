@@ -38,6 +38,10 @@ class Commit
   def to_s
     sha
   end
+
+  def subject
+    @subject ||= message.split("\n").first
+  end
 end
 
 def pending from, to
