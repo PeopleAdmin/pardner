@@ -24,7 +24,7 @@
   %>
 <li class="<%=commit_type %>">
   <span class="commit-sha"><%= commit.sha %></span>
-  <span class="commit-message"><%= commit.subject %></span>
+  <span class="commit-message"><%= commit.message.gsub("\n", "<br>") %></span>
   <br>
   <ul class="commit-issues">
     <li>PA-1234</li>

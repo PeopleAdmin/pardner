@@ -16,7 +16,7 @@ end
 private
 
 class Commit
-  attr_accessor :sha, :subject, :parents
+  attr_accessor :sha, :message, :parents
 
   def self.parse section
     lines = section.split "\n"
@@ -25,9 +25,9 @@ class Commit
       store[parts[0]] = parts[1]
     end
     new.tap do |commit|
-      commit.sha = info["SHA"]
-      commit.subject = info["SUBJECT"]
-      commit.parents = info["PARENTS"].split(' ') if info["PARENTS"]
+      commit.sha = lines[0]
+      commit.parents = lines[1].split(' ')
+      commit.message = lines[2..-1].join("\n")
     end
   end
 
@@ -41,7 +41,7 @@ class Commit
 end
 
 def pending from, to
-  command = "git log --format='SHA=%H%nPARENTS=%P%nSUBJECT=%s%n@END@' --first-parent origin/#{from}..origin/#{to}"
+  command = "git log --format='%H%n%P%nMESSAGE=%B@END@' --first-parent origin/#{from}..origin/#{to}"
   output = run_shell command
   output.split("@END@").map {|section| Commit.parse(section.strip.chomp)}
 end
