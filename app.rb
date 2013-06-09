@@ -8,8 +8,8 @@ get '/' do
 end
 
 get '/pending/:from/:to' do
-  commits = pending params[:from], params[:to]
-  commits.join "<br>"
+  @commits = pending params[:from], params[:to]
+  erb :pending
 end
 
 

@@ -1,0 +1,35 @@
+<style>
+  ul { margin: 0px; padding: 0px}
+  li {
+    list-style-type: none;
+  }
+
+  .commit-list > li {
+    border: solid thin black;
+    margin: 5px;
+  }
+  .commit-list > li:hover {
+    background-color: yellow
+  }
+
+  .merge {
+    background-color: #ccc
+  }
+</style>
+
+<h2>Pending Commits</h2>
+<ul class="commit-list">
+  <% @commits.each do |commit|
+    commit_type = commit.parents.length > 1 ? "merge" : "direct"
+  %>
+<li class="<%=commit_type %>">
+  <span class="commit-sha"><%= commit.sha %></span>
+  <span class="commit-message"><%= commit.subject %></span>
+  <br>
+  <ul class="commit-issues">
+    <li>PA-1234</li>
+    <li>PA-4345</li>
+  </ul>
+  <span class="commit-status">VERIFIED</span>
+<% end %>
+</ul>
