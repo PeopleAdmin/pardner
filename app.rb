@@ -10,7 +10,7 @@ get '/' do
 end
 
 get '/pending/:from/:to' do
-  @commits = ondeck.pending params[:from], params[:to]
+  @commits = ondeck.pending_gh params[:from], params[:to]
   erb :pending
 end
 

@@ -8,8 +8,29 @@ class OnDeck
     output.split("@END@").map {|section| parse_cli_commit(section.strip.chomp)}
   end
 
+  def pending_gh from, to
+    gh = Octokit::Client.new(login: ENV['GH_USER'], oauth_token: ENV['GH_TOKEN'])
+    response = gh.compare ENV['GH_REPO'], from, to
+    all_commits = response.commits.map{|c| parse_gh_commit c}
+    first_parents all_commits, to
+  end
+
 
   private
+
+  def first_parents commits, start_sha
+    known_commits = commits.each_with_object({}) {|c, h| h[c.sha] = c}
+    remaining_shas = [start_sha]
+    firsts = []
+    while commit_sha = remaining_shas.pop
+      commit = known_commits[commit_sha]
+      next unless commit
+      firsts.push commit
+      first_parent = commit.parents.first
+      remaining_shas.push commit.parents.first if known_commits.has_key?(first_parent)
+    end
+    firsts
+  end
 
   def run_shell command
     out = ""
@@ -22,6 +43,14 @@ class OnDeck
       out
     else
       raise err
+    end
+  end
+
+  def parse_gh_commit(gh_commit)
+    Commit.new.tap do |commit|
+      commit.sha = gh_commit.sha
+      commit.parents = gh_commit.parents.map &:sha
+      commit.message = gh_commit.commit.message
     end
   end
 
