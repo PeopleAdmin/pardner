@@ -16,7 +16,6 @@ class OnDeck
   end
 
 
-  private
 
   def first_parents commits, start_sha
     known_commits = commits.each_with_object({}) {|c, h| h[c.sha] = c}
@@ -31,6 +30,8 @@ class OnDeck
     end
     firsts
   end
+
+  private
 
   def run_shell command
     out = ""
