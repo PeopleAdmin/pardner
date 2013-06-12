@@ -2,6 +2,10 @@ require './commit.rb'
 
 class OnDeck
 
+  def initialize(options = {})
+    @options = options
+  end
+
   def pending from, to
     command = "git log --format='%H%n%P%nMESSAGE=%B@END@' --first-parent origin/#{from}..origin/#{to}"
     output = run_shell command
@@ -9,10 +13,14 @@ class OnDeck
   end
 
   def pending_gh from, to
-    gh = Octokit::Client.new(login: ENV['GH_USER'], oauth_token: ENV['GH_TOKEN'])
-    response = gh.compare ENV['GH_REPO'], from, to
+    response = github.compare ENV['GH_REPO'], from, to
     all_commits = response.commits.map{|c| parse_gh_commit c}
+    # 'to' must be a sha
     first_parents all_commits, to
+  end
+
+  def github
+    @github ||= Octokit::Client.new(oauth_token: @options[:github_token])
   end
 
 
