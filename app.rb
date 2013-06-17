@@ -6,9 +6,15 @@ require './on_deck.rb'
 
 use OmniAuth::Builder do
   provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET'], scope: "repo"
+  provider :JIRA,
+    ENV['JIRA_CONSUMER_KEY'],
+    OpenSSL::PKey::RSA.new(IO.read(File.dirname(__FILE__) + "/rsa.pem")),
+    :client_options => { :site => ENV['JIRA_URL'] }
 end
 
-PUBLIC_URLS = ['/', '/logout', '/auth/github', '/auth/github/callback', '/auth/failure']
+PUBLIC_URLS = ['/', '/logout', '/auth/failure',
+               '/auth/github', '/auth/github/callback',
+               '/auth/JIRA', '/auth/JIRA/callback']
 
 
 enable :sessions
@@ -22,8 +28,16 @@ helpers do
     session["github_token"]
   end
 
+  def jira_token
+    session["JIRA_token"]
+  end
+
   def logged_in
     !!github_token
+  end
+
+  def jira_confirmed
+    !!jira_token
   end
 
   def protected!
@@ -34,7 +48,9 @@ end
 
 get '/' do
   "
-  <a href='auth/github'>Sign in via Github</a> Current token: #{github_token}
+  #{ logged_in ? "Github Token #{github_token}" : "<a href='auth/github'>Sign in via Github</a>" }
+  <br>
+  #{ jira_confirmed ? "JIRA Token #{jira_token}" : "<a href='auth/JIRA'>Confirm JIRA</a>" }
   <br>
   <a href='/pending/production/master'>Master</a>
   <br>
@@ -48,7 +64,7 @@ end
 
 get '/auth/:provider/callback' do
   omniauth = request.env['omniauth.auth']
-  session['github_token'] = omniauth['credentials']['token']
+  session["#{params[:provider]}_token"] = omniauth['credentials']['token']
   redirect "/"
 end
 
@@ -60,6 +76,7 @@ end
 
 get '/logout' do
   session["github_token"] = nil
+  session["JIRA_token"] = nil
   redirect '/'
 end
 
