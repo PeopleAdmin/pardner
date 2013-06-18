@@ -15,8 +15,7 @@ class OnDeck
   def pending_gh from, to
     response = github.compare ENV['GH_REPO'], from, to
     all_commits = response.commits.map{|c| parse_gh_commit c}
-    # 'to' must be a sha
-    first_parents all_commits, to
+    first_parents all_commits, all_commits.last.sha
   end
 
   def github
