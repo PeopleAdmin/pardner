@@ -1,16 +1,18 @@
 <style>
-  ul { margin: 0px; padding: 0px}
+  ol,ul { margin: 0px; padding: 0px}
   li {
     list-style-type: none;
   }
 
-  .commit-list > li {
+  #commit-list > li {
     border: solid thin black;
     margin: 5px;
   }
-  .commit-list > li:hover {
+  #commit-list > li:hover {
     background-color: yellow
   }
+
+  .commit-issues li { display: inline }
 
   .merge {
     background-color: #ccc
@@ -18,18 +20,21 @@
 </style>
 
 <h2>Pending Commits</h2>
-<ul class="commit-list">
+<ol id="commit-list">
   <% @commits.each do |commit|
     commit_type = commit.parents.length > 1 ? "merge" : "direct"
   %>
 <li class="<%=commit_type %>">
-  <span class="commit-sha"><%= commit.sha %></span>
-  <span class="commit-message"><%= commit.message.gsub("\n", "<br>") %></span>
-  <br>
-  <ul class="commit-issues">
-    <li>PA-1234</li>
-    <li>PA-4345</li>
-  </ul>
   <span class="commit-status">VERIFIED</span>
+  <span class="commit-sha"><%= commit.sha[0..9] %></span>
+  <span class="commit-subject"><%= commit.subject %></span>
+  <% unless commit.body.empty? %>
+  <div class="commit-message"><pre><%= commit.body %></pre></div>
 <% end %>
-</ul>
+  <ul class="commit-issues">
+    <% commit.issues.each do |issue| %>
+      <li><%= issue %></li>
+    <% end %>
+  </ul>
+<% end %>
+</ol>

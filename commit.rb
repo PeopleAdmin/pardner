@@ -10,6 +10,21 @@ class Commit
   end
 
   def subject
-    @subject ||= message.split("\n").first
+    @subject ||= message_lines.first
+  end
+
+  def body
+    @body ||= message_lines[1..-1].join("\n")
+  end
+
+  def issues
+    @issues ||= message.scan(/PA[-\s_]*(\d+)/i).map{|i| "PA-#{i.first}" }.uniq.sort
+  end
+
+  private
+
+  def message_lines
+    @message_lines ||= message.split("\n")
+
   end
 end
