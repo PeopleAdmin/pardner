@@ -18,11 +18,9 @@ class OnDeck
     first_parents all_commits, all_commits.last.sha
   end
 
-  def github
-    @github ||= Octokit::Client.new(oauth_token: @options[:github_token])
+  def status identifier
+    jira_request "/rest/api/2/issue/#{params[:identifier]}?expand=changelog"
   end
-
-
 
   def first_parents commits, start_sha
     known_commits = commits.each_with_object({}) {|c, h| h[c.sha] = c}
@@ -39,6 +37,23 @@ class OnDeck
   end
 
   private
+
+  def jira_request url
+    response = jira.get(url, {'Accept' => 'application/json'}).body
+    Hashie::Mash.new(MultiJson.decode(response))
+  end
+
+  def jira
+    @jira ||=
+      begin
+        OAuth::AccessToken.new(@options[:jira_consumer],
+                               @options[:jira_token], @options[:jira_secret])
+      end
+  end
+
+  def github
+    @github ||= Octokit::Client.new(oauth_token: @options[:github_token])
+  end
 
   def run_shell command
     out = ""

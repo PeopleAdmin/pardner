@@ -32,6 +32,10 @@ helpers do
     session["JIRA_token"]
   end
 
+  def jira_secret
+    session["JIRA_secret"]
+  end
+
   def logged_in
     !!github_token
   end
@@ -62,9 +66,18 @@ get '/pending/:from/:to' do
   erb :pending
 end
 
+get '/status/:identifier' do
+  ondeck.status params[:identifier]
+end
+
 get '/auth/:provider/callback' do
   omniauth = request.env['omniauth.auth']
-  session["#{params[:provider]}_token"] = omniauth['credentials']['token']
+  provider = params[:provider]
+  File.open("#{provider}.json", "w"){|f| f.write omniauth.to_json }
+  session["#{provider}_token"] = omniauth['credentials']['token']
+  if provider == "JIRA"
+    session["JIRA_secret"] = omniauth['credentials']['secret']
+  end
   redirect "/"
 end
 
@@ -83,5 +96,18 @@ end
 private
 
 def ondeck
-  @ondeck ||= OnDeck.new github_token: github_token
+  @ondeck ||= OnDeck.new github_token: github_token,
+    jira_token: jira_token, jira_secret: jira_secret,
+    jira_consumer: jira_consumer
+end
+
+def jira_consumer
+  @consumer ||= OAuth::Consumer.new(
+    ENV['JIRA_CONSUMER_KEY'],
+    OpenSSL::PKey::RSA.new(IO.read(File.dirname(__FILE__) + "/rsa.pem")),
+    {
+      :site => ENV['JIRA_URL'],
+      :signature_method => 'RSA-SHA1',
+      :scheme => :header,
+    }).tap {|c| c.http.set_debug_output($stderr) }
 end
