@@ -1,10 +1,8 @@
-require 'minitest/spec'
-require 'minitest/autorun'
 require './on_deck.rb'
 
 describe OnDeck do
-  describe "#grouped_commits" do
-    it "works" do
+  describe "#first_parents" do
+    it "returns the list of commits from the mainline" do
       APP_ROOT = File.expand_path(File.dirname(File.expand_path(__FILE__)) + "/..")
       commits = File.readlines("#{APP_ROOT}/test/fixtures/all_with_parents.txt").map do |line|
         sha, parents = line.chomp.split(' ', 2)
@@ -39,7 +37,71 @@ b1253933b77ff0769d35b73fe9765b47750608c9
       ".split("\n").map{|l| l.strip}.reject{|l| l.empty?}
 
       actual = OnDeck.new.first_parents(commits, commits.first.sha)
-      actual.map(&:sha).must_equal expected_first_parents
+      actual.map(&:sha).should == expected_first_parents
     end
+  end
+
+  describe "#grouped_commits" do
+    # scenarios to cover
+    # non-merge commit on mainline (A)
+    # merge commits started from mainline commit (C)
+    # merge commits started from an unincluded commit (G, I)
+    # merge commits started from a commit in branch already merged (E)
+    #
+    #  A
+    #  |
+    #  B
+    #  |\
+    #  | C
+    #  |/
+    #  D
+    #  |\
+    #  | E
+    #  | |
+    #  F |
+    #  |\|
+    #  | G
+    #  | |
+    #  H I
+    #  | |
+    #  J K
+
+    let(:all) { [] }
+    before do
+      all << commit('A', ['B'])
+      all << commit('B', ['D', 'C'])
+      all << commit('C', ['D'])
+      all << commit('D', ['F', 'E'])
+      all << commit('E', ['G'])
+      all << commit('F', ['H', 'G'])
+      all << commit('G', ['I'])
+      all << commit('H', ['J'])
+      all << commit('I', ['K'])
+      all << commit('J', [])
+      all << commit('K', [])
+    end
+
+    it "identifies first parents" do
+      first_parents = OnDeck.new.first_parents all, all.first.sha
+      first_parents.map(&:sha).should == %w(A B D F H J)
+    end
+
+    it "groups commits by their first parent" do
+      grouped = OnDeck.new.grouped_commits all, all.first.sha
+      grouped.keys.should == %w(A B D F H J)
+      grouped['A'].map(&:sha).should == []
+      grouped['B'].map(&:sha).should == %w(C)
+      grouped['D'].map(&:sha).should == %w(E)
+      grouped['F'].map(&:sha).should == %w(G I K)
+      grouped['H'].map(&:sha).should == []
+      grouped['J'].map(&:sha).should == []
+    end
+  end
+
+  def commit sha, parent_shas
+    Commit.new.tap {|c|
+      c.sha = sha
+      c.parents = parent_shas
+    }
   end
 end

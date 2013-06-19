@@ -36,6 +36,26 @@ class OnDeck
     firsts
   end
 
+  def grouped_commits commits, start_sha
+    known_commits = commits.each_with_object({}) {|c, h| h[c.sha] = c}
+    mainline = first_parents commits, start_sha
+    mainline.each do |mainline_parent|
+      # traverse all parents except first
+      # record mainline parent
+      remaining_shas = mainline_parent.parents[1..-1] || []
+      while commit_sha = remaining_shas.pop
+        commit = known_commits[commit_sha]
+        next unless commit
+        next if mainline.include? commit
+        commit.mainline_parent = mainline_parent
+        remaining_shas += commit.parents
+      end
+    end
+    mainline.each_with_object({}) do |mainline_parent, all|
+      all[mainline_parent.sha] = commits.select{|c| c.mainline_parent == mainline_parent}
+    end
+  end
+
   private
 
   def jira_request url
