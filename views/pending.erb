@@ -32,7 +32,7 @@
  <div class="commit-message"><pre><%= commit.body %></pre></div>
 <% end %>
 <ul class="commit-issues">
-  <% commit.issues.each do |issue| %>
+  <% commit.all_issues.each do |issue| %>
     <li><%= issue %></li>
   <% end %>
 </ul>
