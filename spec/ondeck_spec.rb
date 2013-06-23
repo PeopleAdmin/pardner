@@ -88,13 +88,13 @@ b1253933b77ff0769d35b73fe9765b47750608c9
 
     it "groups commits by their first parent" do
       grouped = OnDeck.new.grouped_commits all, all.first.sha
-      grouped.keys.should == %w(A B D F H J)
-      grouped['A'].map(&:sha).should == []
-      grouped['B'].map(&:sha).should == %w(C)
-      grouped['D'].map(&:sha).should == %w(E)
-      grouped['F'].map(&:sha).should == %w(G I K)
-      grouped['H'].map(&:sha).should == []
-      grouped['J'].map(&:sha).should == []
+      grouped.map(&:sha).should == %w(A B D F H J)
+      grouped[0].contributing_commits.map(&:sha).should == []
+      grouped[1].contributing_commits.map(&:sha).should == %w(C)
+      grouped[2].contributing_commits.map(&:sha).should == %w(E)
+      grouped[3].contributing_commits.map(&:sha).should == %w(G I K)
+      grouped[4].contributing_commits.map(&:sha).should == []
+      grouped[5].contributing_commits.map(&:sha).should == []
     end
   end
 

@@ -1,6 +1,7 @@
 class Commit
   attr_accessor :sha, :message, :parents
   attr_accessor :mainline_parent
+  attr_accessor :contributing_commits
 
   def parents
     @parents ||= []

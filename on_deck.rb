@@ -15,7 +15,7 @@ class OnDeck
   def pending_gh from, to
     response = github.compare ENV['GH_REPO'], from, to
     all_commits = response.commits.map{|c| parse_gh_commit c}
-    first_parents all_commits, all_commits.last.sha
+    grouped_commits all_commits, all_commits.last.sha
   end
 
   def status identifier
@@ -51,8 +51,8 @@ class OnDeck
         remaining_shas += commit.parents
       end
     end
-    mainline.each_with_object({}) do |mainline_parent, all|
-      all[mainline_parent.sha] = commits.select{|c| c.mainline_parent == mainline_parent}
+    mainline.each do |mainline_parent|
+      mainline_parent.contributing_commits = commits.select{|c| c.mainline_parent == mainline_parent}
     end
   end
 

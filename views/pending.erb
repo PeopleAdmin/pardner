@@ -29,12 +29,20 @@
   <span class="commit-sha"><%= commit.sha[0..9] %></span>
   <span class="commit-subject"><%= commit.subject %></span>
   <% unless commit.body.empty? %>
-  <div class="commit-message"><pre><%= commit.body %></pre></div>
+ <div class="commit-message"><pre><%= commit.body %></pre></div>
 <% end %>
-  <ul class="commit-issues">
-    <% commit.issues.each do |issue| %>
-      <li><%= issue %></li>
-    <% end %>
-  </ul>
+<ul class="commit-issues">
+  <% commit.issues.each do |issue| %>
+    <li><%= issue %></li>
+  <% end %>
+</ul>
+<ol>
+  <% commit.contributing_commits.each do |hidden_commit| %>
+    <li>
+      <span class="commit-sha"><%= hidden_commit.sha[0..9] %></span>
+    </li>
+  <% end %>
+</ol>
+</li>
 <% end %>
 </ol>
