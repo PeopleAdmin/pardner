@@ -68,26 +68,26 @@ b1253933b77ff0769d35b73fe9765b47750608c9
 
     let(:all) { [] }
     before do
-      all << commit('A', ['B'])
-      all << commit('B', ['D', 'C'])
-      all << commit('C', ['D'])
-      all << commit('D', ['F', 'E'])
-      all << commit('E', ['G'])
-      all << commit('F', ['H', 'G'])
-      all << commit('G', ['I'])
-      all << commit('H', ['J'])
-      all << commit('I', ['K'])
-      all << commit('J', [])
       all << commit('K', [])
+      all << commit('J', [])
+      all << commit('I', ['K'])
+      all << commit('H', ['J'])
+      all << commit('G', ['I'])
+      all << commit('F', ['H', 'G'])
+      all << commit('E', ['G'])
+      all << commit('D', ['F', 'E'])
+      all << commit('C', ['D'])
+      all << commit('B', ['D', 'C'])
+      all << commit('A', ['B'])
     end
 
     it "identifies first parents" do
-      first_parents = OnDeck.new.first_parents all, all.first.sha
+      first_parents = OnDeck.new.first_parents all, all.last.sha
       first_parents.map(&:sha).should == %w(A B D F H J)
     end
 
     it "groups commits by their first parent" do
-      grouped = OnDeck.new.grouped_commits all, all.first.sha
+      grouped = OnDeck.new.grouped_commits all, all.last.sha
       grouped.map(&:sha).should == %w(A B D F H J)
       grouped[0].contributing_commits.map(&:sha).should == []
       grouped[1].contributing_commits.map(&:sha).should == %w(C)

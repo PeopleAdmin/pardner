@@ -52,7 +52,7 @@ class OnDeck
       end
     end
     mainline.each do |mainline_parent|
-      mainline_parent.contributing_commits = commits.select{|c| c.mainline_parent == mainline_parent}
+      mainline_parent.contributing_commits = commits.select{|c| c.mainline_parent == mainline_parent}.reverse
     end
   end
 
