@@ -20,7 +20,10 @@ class Commit
   end
 
   def issues
-    @issues ||= message.scan(/PA[-\s_]*(\d+)/i).map{|i| "PA-#{i.first}" }.uniq.sort
+    @issues ||= message.scan(/PA[-\s_]*(\d+)/i).
+      map{|i| i.first.to_i}.
+      uniq.sort.
+      map{|i| "PA-#{i}" }
   end
 
   private
