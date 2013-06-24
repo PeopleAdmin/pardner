@@ -64,11 +64,11 @@ get '/' do
   "
   #{ logged_in ? "Github Token #{github_token}" : "<a href='auth/github'>Sign in via Github</a>" }
   <br>
-  #{ jira_confirmed ? "JIRA Token #{jira_token}" : "<a href='auth/JIRA'>Confirm JIRA</a>" }
+  #{ !jira_confirmed ? "<a href='auth/JIRA'>Confirm JIRA</a>" : "JIRA Token #{jira_token}
   <br>
   <a href='/PeopleAdmin/hr_suite/pending/production/master'>Master</a>
   <br>
-  <a href='/PeopleAdmin/hr_suite/pending/production/release'>Release</a>"
+  <a href='/PeopleAdmin/hr_suite/pending/production/release'>Release</a>"}"
 end
 
 get '/:org/:repo/pending/:from/:to' do
@@ -84,7 +84,6 @@ end
 get '/auth/:provider/callback' do
   omniauth = request.env['omniauth.auth']
   provider = params[:provider]
-  File.open("#{provider}.json", "w"){|f| f.write omniauth.to_json }
   session["#{provider}_token"] = omniauth['credentials']['token']
   if provider == "JIRA"
     session["JIRA_secret"] = omniauth['credentials']['secret']
