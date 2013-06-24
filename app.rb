@@ -4,12 +4,22 @@ Bundler.require
 require './commit.rb'
 require './on_deck.rb'
 
+load '.settings' if File.exists? '.settings'
+
+if ENV['GITHUB_CLIENT_ID']
+  set :github_client_id, ENV['GITHUB_CLIENT_ID']
+  set :github_client_secret, ENV['GITHUB_CLIENT_SECRET']
+  set :jira_consumer_key, ENV['JIRA_CONSUMER_KEY']
+  set :jira_rsa_key, OpenSSL::PKey::RSA.new(ENV['JIRA_RSA_PEM'])
+  set :jira_url, ENV['JIRA_URL']
+end
+
 use OmniAuth::Builder do
-  provider :github, ENV['GITHUB_KEY'], ENV['GITHUB_SECRET'], scope: "repo"
+  provider :github, settings.github_client_id, settings.github_client_secret, scope: "repo"
   provider :JIRA,
-    ENV['JIRA_CONSUMER_KEY'],
-    OpenSSL::PKey::RSA.new(IO.read(File.dirname(__FILE__) + "/rsa.pem")),
-    :client_options => { :site => ENV['JIRA_URL'] }
+    settings.jira_consumer_key,
+    settings.jira_rsa_key,
+    :client_options => { :site => settings.jira_url }
 end
 
 PUBLIC_URLS = ['/', '/logout', '/auth/failure',
@@ -104,10 +114,9 @@ end
 
 def jira_consumer
   @consumer ||= OAuth::Consumer.new(
-    ENV['JIRA_CONSUMER_KEY'],
-    OpenSSL::PKey::RSA.new(IO.read(File.dirname(__FILE__) + "/rsa.pem")),
+    settings.jira_consumer_key, settings.jira_rsa_key,
     {
-      :site => ENV['JIRA_URL'],
+      :site => settings.jira_url,
       :signature_method => 'RSA-SHA1',
       :scheme => :header,
     }).tap {|c| c.http.set_debug_output($stderr) }

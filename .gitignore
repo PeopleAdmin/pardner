@@ -2,3 +2,4 @@
 .powenv
 tmp/
 run
+.settings
