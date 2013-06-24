@@ -12,8 +12,8 @@ class OnDeck
     output.split("@END@").map {|section| parse_cli_commit(section.strip.chomp)}
   end
 
-  def pending_gh from, to
-    response = github.compare ENV['GH_REPO'], from, to
+  def pending_gh repo, from, to
+    response = github.compare repo, from, to
     all_commits = response.commits.map{|c| parse_gh_commit c}
     grouped_commits all_commits, all_commits.last.sha
   end

@@ -56,13 +56,14 @@ get '/' do
   <br>
   #{ jira_confirmed ? "JIRA Token #{jira_token}" : "<a href='auth/JIRA'>Confirm JIRA</a>" }
   <br>
-  <a href='/pending/production/master'>Master</a>
+  <a href='/PeopleAdmin/hr_suite/pending/production/master'>Master</a>
   <br>
-  <a href='/pending/production/release'>Release</a>"
+  <a href='/PeopleAdmin/hr_suite/pending/production/release'>Release</a>"
 end
 
-get '/pending/:from/:to' do
-  @commits = ondeck.pending_gh params[:from], params[:to]
+get '/:org/:repo/pending/:from/:to' do
+  repo = "#{params[:org]}/#{params[:repo]}"
+  @commits = ondeck.pending_gh repo, params[:from], params[:to]
   erb :pending
 end
 
