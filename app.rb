@@ -78,7 +78,8 @@ get '/:org/:repo/pending/:from/:to' do
 end
 
 get '/status/:identifier' do
-  ondeck.status params[:identifier]
+  content_type :json
+  MultiJson.dump(ondeck.status(params[:identifier]), pretty: true)
 end
 
 get '/auth/:provider/callback' do

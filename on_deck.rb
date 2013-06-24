@@ -13,7 +13,7 @@ class OnDeck
   end
 
   def status identifier
-    jira_request "/rest/api/2/issue/#{params[:identifier]}?expand=changelog"
+    jira_request "/rest/api/2/issue/#{identifier}?expand=changelog"
   end
 
   def first_parents commits, start_sha
