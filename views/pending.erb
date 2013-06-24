@@ -12,14 +12,24 @@
     background-color: yellow
   }
 
-  .commit-issues li { display: inline }
+  .commit-issues li {
+    display: inline;
+    padding-right: 1em;
+  }
 
   .merge {
     background-color: #ccc
   }
 </style>
 
-<h2>Pending Commits</h2>
+<h2>Pending Merge Overview</h2>
+<h3>Issues</h3>
+<ul class="commit-issues">
+  <% Commit.issues(@commits).each do |issue| %>
+    <li><%= issue %></li>
+  <% end %>
+</ul>
+<h4>Commits</h4>
 <ol id="commit-list">
   <% @commits.each do |commit|
     commit_type = commit.parents.length > 1 ? "merge" : "direct"

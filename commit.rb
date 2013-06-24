@@ -24,7 +24,7 @@ class Commit
   end
 
   def issues
-    format_issues issue_numbers
+    self.class.format_issues issue_numbers
   end
 
   def issue_numbers
@@ -32,15 +32,23 @@ class Commit
       map{|i| i.first.to_i}
   end
 
+  def all_issue_numbers
+    issue_numbers + contributing_commits.flat_map(&:issue_numbers)
+  end
+
   def all_issues
-    format_issues issue_numbers + contributing_commits.flat_map(&:issue_numbers)
+    self.class.format_issues all_issue_numbers
+  end
+
+  def self.format_issues issue_numbers
+    issue_numbers.uniq.sort.map{|i| "PA-#{i}" }
+  end
+
+  def self.issues commits
+    format_issues commits.flat_map(&:all_issue_numbers)
   end
 
   private
-
-  def format_issues issue_list
-    issue_list.uniq.sort.map{|i| "PA-#{i}" }
-  end
 
   def message_lines
     @message_lines ||= message.split("\n")
