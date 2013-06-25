@@ -61,14 +61,7 @@ end
 
 
 get '/' do
-  "
-  #{ logged_in ? "Github Token #{github_token}" : "<a href='auth/github'>Sign in via Github</a>" }
-  <br>
-  #{ !jira_confirmed ? "<a href='auth/JIRA'>Confirm JIRA</a>" : "JIRA Token #{jira_token}
-  <br>
-  <a href='/PeopleAdmin/hr_suite/pending/production/master'>Master</a>
-  <br>
-  <a href='/PeopleAdmin/hr_suite/pending/production/release'>Release</a>"}"
+  erb :index
 end
 
 get '/:org/:repo/pending/:from/:to' do

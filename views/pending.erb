@@ -8,9 +8,6 @@
     border: solid thin black;
     margin: 5px;
   }
-  #commit-list > li:hover {
-    background-color: yellow
-  }
 
   .commit-issues li {
     display: inline;
@@ -18,7 +15,11 @@
   }
 
   .merge {
-    background-color: #ccc
+    border: solid thick black;
+  }
+
+  .commit-sha {
+    font-size: smaller;
   }
 </style>
 
@@ -26,7 +27,7 @@
 <h3>Issues</h3>
 <ul class="commit-issues">
   <% Commit.issues(@commits).each do |issue| %>
-    <li><%= issue %></li>
+    <li class="summary-issue"><%= issue %></li>
   <% end %>
 </ul>
 <h4>Commits</h4>
@@ -34,8 +35,7 @@
   <% @commits.each do |commit|
     commit_type = commit.parents.length > 1 ? "merge" : "direct"
   %>
-<li class="<%=commit_type %>">
-  <span class="commit-status">VERIFIED</span>
+<li class="<%=commit_type %> <%= commit.all_issues.map{|c| "fixes-#{c}"}.join(' ') %>">
   <span class="commit-sha"><%= commit.sha[0..9] %></span>
   <span class="commit-subject"><%= commit.subject %></span>
   <% unless commit.body.empty? %>
@@ -50,6 +50,7 @@
   <% commit.contributing_commits.each do |hidden_commit| %>
     <li>
       <span class="commit-sha"><%= hidden_commit.sha[0..9] %></span>
+      <span class="commit-subject"><%= hidden_commit.subject %></span>
     </li>
   <% end %>
 </ol>
