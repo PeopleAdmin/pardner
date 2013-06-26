@@ -16,12 +16,24 @@
 
 <h2>Pending Merge Overview</h2>
 <h3>Issues</h3>
-<div id="issue-accordian">
-  <% Commit.issues(@commits).each do |issue| %>
-    <div><a href="#details-<%= issue %>" data-toggle="collapse" data-parent="#issue-accordian"><%= issue %></a></div>
-    <div id="details-<%= issue %>" class="collapse">EVEN More about <%= issue %></div>
-  <% end %>
-</div>
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th>Issue</th>
+      <th>State</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+<% Commit.issues(@commits).each do |issue| %>
+    <tr>
+      <td><%= issue %></td>
+      <td>unknown</td>
+      <td><%= "Description of #{issue}" %></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
 
 <hr>
 
