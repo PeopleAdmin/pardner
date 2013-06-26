@@ -1,17 +1,7 @@
 <style>
-  ol,ul { margin: 0px; padding: 0px}
-  li {
-    list-style-type: none;
-  }
-
   #commit-list > li {
     border: solid thin black;
     margin: 5px;
-  }
-
-  .commit-issues li {
-    display: inline;
-    padding-right: 1em;
   }
 
   .merge {
@@ -20,40 +10,56 @@
 
   .commit-sha {
     font-size: smaller;
+    font-family: monospace;
   }
 </style>
 
 <h2>Pending Merge Overview</h2>
 <h3>Issues</h3>
-<ul class="commit-issues">
+<div id="issue-accordian">
   <% Commit.issues(@commits).each do |issue| %>
-    <li class="summary-issue"><%= issue %></li>
+    <div><a href="#details-<%= issue %>" data-toggle="collapse" data-parent="#issue-accordian"><%= issue %></a></div>
+    <div id="details-<%= issue %>" class="collapse">EVEN More about <%= issue %></div>
   <% end %>
-</ul>
+</div>
+
+<hr>
+
 <h4>Commits</h4>
-<ol id="commit-list">
-  <% @commits.each do |commit|
-    commit_type = commit.parents.length > 1 ? "merge" : "direct"
-  %>
-<li class="<%=commit_type %> <%= commit.all_issues.map{|c| "fixes-#{c}"}.join(' ') %>">
-  <span class="commit-sha"><%= commit.sha[0..9] %></span>
-  <span class="commit-subject"><%= commit.subject %></span>
-  <% unless commit.body.empty? %>
- <div class="commit-message"><pre><%= commit.body %></pre></div>
+<%
+  @commits.each do |commit|
+    commit_type = commit.parents.length > 1 ? :merge : :direct
+%>
+<div class="row-fluid">
+  <div class="span8 <%= commit.all_issues.map{|c| "fixes-#{c}"}.join(' ') %>">
+    <span class="commit-sha"><%= commit.short_sha %></span>
+<% if commit_type == :merge %>
+      <a href="#commits-<%= commit.short_sha %>" data-toggle="collapse"><i class="icon-code-fork"></i></a>
 <% end %>
-<ul class="commit-issues">
-  <% commit.all_issues.each do |issue| %>
-    <li><%= issue %></li>
-  <% end %>
-</ul>
-<ol>
-  <% commit.contributing_commits.each do |hidden_commit| %>
-    <li>
-      <span class="commit-sha"><%= hidden_commit.sha[0..9] %></span>
-      <span class="commit-subject"><%= hidden_commit.subject %></span>
-    </li>
-  <% end %>
-</ol>
-</li>
+<span><%=h commit.subject %></span>
+<% unless commit.body.empty? %>
+    <span><a href="#message-<%= commit.short_sha %>" data-toggle="collapse"><i class="icon-ellipsis-horizontal"></i></a></span>
+    <div id="message-<%= commit.short_sha %>" class="commit-message collapse">
+<pre><%= commit.body %></pre>
+    </div>
 <% end %>
-</ol>
+  </div>
+  <div class="span4">
+    <ul class="commit-issues inline">
+<% commit.all_issues.each do |issue| %>
+      <li><%= issue %></li>
+<% end %>
+    </ul>
+  </div>
+</div>
+<div id="commits-<%= commit.short_sha %>" class="row-fluid collapse">
+<% commit.contributing_commits.each do |hidden_commit| %>
+  <div class="row-fluid">
+    <div class="offset1 span11">
+      <span class="commit-sha"><%= hidden_commit.short_sha %></span>
+      <span class="commit-subject"><%=h hidden_commit.subject %></span>
+    </div>
+  </div>
+<% end %>
+</div>
+<% end %>

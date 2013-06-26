@@ -11,6 +11,10 @@ class Commit
     @contributing_commits ||= []
   end
 
+  def short_sha
+    sha[0..9]
+  end
+
   def to_s
     sha
   end
