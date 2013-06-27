@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bundler'
 Bundler.require
+require './db.rb'
 require './commit.rb'
 require './on_deck.rb'
 
@@ -28,37 +29,58 @@ use OmniAuth::Builder do
     :client_options => { :site => settings.jira_url }
 end
 
-PUBLIC_URLS = ['/', '/logout', '/auth/failure',
-               '/auth/github', '/auth/github/callback',
-               '/auth/JIRA', '/auth/JIRA/callback']
+def db
+  @db ||= DB.new(ENV['MONGOLAB_URI'])
+end
+
+PUBLIC_URLS = ['/', '/logout', '/auth/failure']
 
 before do
-  protected! unless PUBLIC_URLS.include? request.path_info
+  identify_user
+  authenticate_with_github! if require_github_auth?
+  authenticate_with_jira! if require_jira_auth?
 end
 
 helpers do
-  def github_token
-    session["github_token"]
-  end
-
-  def jira_token
-    session["JIRA_token"]
-  end
-
-  def jira_secret
-    session["JIRA_secret"]
+  def current_user
+    @current_user
   end
 
   def logged_in
-    !!github_token
+    !!current_user
   end
 
-  def jira_confirmed
-    !!jira_token
+  def identify_user
+    return unless session["user_id"]
+    @current_user = db.find_user_by_id session["user_id"]
   end
 
-  def protected!
-    redirect '/auth/github' unless logged_in
+  def require_github_auth?
+    access_without_github_auth = PUBLIC_URLS +
+      ['/auth/github', '/auth/github/callback']
+    !access_without_github_auth.include? request.path_info
+  end
+
+  def require_jira_auth?
+    access_without_jira_auth = PUBLIC_URLS +
+      ['/auth/github', '/auth/github/callback', '/auth/JIRA', '/auth/JIRA/callback']
+    !access_without_jira_auth.include? request.path_info
+  end
+
+  def github_authenticated?
+    current_user && current_user.github_authenticated?
+  end
+
+  def jira_authenticated?
+    current_user && current_user.jira_authenticated?
+  end
+
+  def authenticate_with_github!
+    redirect '/auth/github' unless github_authenticated?
+  end
+
+  def authenticate_with_jira!
+    redirect '/auth/JIRA' unless jira_authenticated?
   end
 
   def h(text)
@@ -82,13 +104,14 @@ get '/status/:identifier' do
   MultiJson.dump(ondeck.status(params[:identifier]), pretty: true)
 end
 
-get '/auth/:provider/callback' do
-  omniauth = request.env['omniauth.auth']
-  provider = params[:provider]
-  session["#{provider}_token"] = omniauth['credentials']['token']
-  if provider == "JIRA"
-    session["JIRA_secret"] = omniauth['credentials']['secret']
-  end
+get '/auth/github/callback' do
+  @user = db.find_or_create_user_by_github_auth request.env['omniauth.auth']
+  session["user_id"] = @user.id
+  redirect "/"
+end
+
+get '/auth/JIRA/callback' do
+  db.update_user_jira_auth current_user, request.env['omniauth.auth']
   redirect "/"
 end
 
@@ -99,17 +122,14 @@ get '/auth/failure' do
 end
 
 get '/logout' do
-  session["github_token"] = nil
-  session["JIRA_token"] = nil
+  session["user_id"] = nil
   redirect '/'
 end
 
 private
 
 def ondeck
-  @ondeck ||= OnDeck.new github_token: github_token,
-    jira_token: jira_token, jira_secret: jira_secret,
-    jira_consumer: jira_consumer
+  @ondeck ||= OnDeck.new current_user, jira_consumer: jira_consumer
 end
 
 def jira_consumer

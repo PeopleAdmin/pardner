@@ -2,7 +2,8 @@ require './commit.rb'
 
 class OnDeck
 
-  def initialize(options = {})
+  def initialize(user, options = {})
+    @user = user
     @options = options
   end
 
@@ -61,12 +62,12 @@ class OnDeck
     @jira ||=
       begin
         OAuth::AccessToken.new(@options[:jira_consumer],
-                               @options[:jira_token], @options[:jira_secret])
+                               @user.jira_token, @user.jira_secret)
       end
   end
 
   def github
-    @github ||= Octokit::Client.new(oauth_token: @options[:github_token])
+    @github ||= Octokit::Client.new(oauth_token: @user.github_token)
   end
 
   def parse_gh_commit(gh_commit)

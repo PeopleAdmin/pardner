@@ -6,6 +6,8 @@ gem 'open4', '~> 1.3.0'
 gem 'octokit'
 gem 'omniauth-github'
 gem 'omniauth-jira'
+gem 'mongo'
+gem 'bson_ext'
 
 group :development do
   gem 'rspec'

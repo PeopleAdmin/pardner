@@ -1,11 +1,16 @@
-<%= logged_in ? "Github Token #{github_token}" : "<a href='auth/github'>Sign in via Github</a>" %>
-<br>
-  <% if !jira_confirmed %>
-    <a href='auth/JIRA'>Confirm JIRA</a>
+<% if github_authenticated? %>
+  <h2>Welcome,  <%= current_user.name %></h2>
+  <% if !current_user.jira_authenticated? %>
+    <a href='auth/JIRA'>Sign in to JIRA</a>
   <% else %>
-    JIRA Token <%= jira_token %>
+    Identified as JIRA user: <%= current_user.jira_username %>
   <br>
-  <a href='/PeopleAdmin/hr_suite/pending/production/master'>Master</a>
-  <br>
-  <a href='/PeopleAdmin/hr_suite/pending/production/release'>Release</a>
+  <h3>View pending commits</h3>
+  <ul class="unstyled">
+    <li><a href='/PeopleAdmin/hr_suite/pending/production/master'>Master</a></li>
+    <li><a href='/PeopleAdmin/hr_suite/pending/production/release'>Release</a></li>
+  </ul>
+<% end %>
+<% else %>
+  <a href='auth/github'>Sign in via Github</a>
 <% end %>
