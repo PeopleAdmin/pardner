@@ -12,7 +12,13 @@ if ENV['GITHUB_CLIENT_ID']
   set :jira_consumer_key, ENV['JIRA_CONSUMER_KEY']
   set :jira_rsa_key, OpenSSL::PKey::RSA.new(ENV['JIRA_RSA_PEM'])
   set :jira_url, ENV['JIRA_URL']
+  set :session_secret, ENV['SESSION_SECRET']
 end
+
+use Rack::Session::Cookie, key: 'app.session',
+                           path: '/',
+                           expire_after: 60*60*24*60,
+                           secret: settings.session_secret
 
 use OmniAuth::Builder do
   provider :github, settings.github_client_id, settings.github_client_secret, scope: "repo"
@@ -25,9 +31,6 @@ end
 PUBLIC_URLS = ['/', '/logout', '/auth/failure',
                '/auth/github', '/auth/github/callback',
                '/auth/JIRA', '/auth/JIRA/callback']
-
-
-enable :sessions
 
 before do
   protected! unless PUBLIC_URLS.include? request.path_info
