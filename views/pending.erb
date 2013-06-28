@@ -49,7 +49,12 @@ Items that will be moved into <%= @from %> from <%= @to %>
         <img src="<%= issue["status"]["iconUrl"] %>">
         <%= issue["status"]["name"] %>
       </td>
-      <td><%= issue["summary"] %></td>
+      <td>
+        <% issue["labels"].each do |label| %>
+          <span class="label"><%= label %></span>
+        <% end %>
+        <%= issue["summary"] %>
+      </td>
     </tr>
 <% end %>
   </tbody>

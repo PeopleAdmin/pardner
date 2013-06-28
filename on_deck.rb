@@ -18,7 +18,7 @@ class OnDeck
   end
 
   def issue_details *issues
-    response = jira_request "/rest/api/2/search?jql=id%20in%20(#{issues.join(',')})&fields=status,summary"
+    response = jira_request "/rest/api/2/search?jql=id%20in%20(#{issues.join(',')})&fields=status,summary,labels"
     response.issues.each_with_object({}) do |issue, lookup|
       lookup[issue["key"]] = issue
     end
