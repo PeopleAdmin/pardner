@@ -17,6 +17,13 @@ class OnDeck
     jira_request "/rest/api/2/issue/#{identifier}?expand=changelog"
   end
 
+  def issue_details *issues
+    response = jira_request "/rest/api/2/search?jql=id%20in%20(#{issues.join(',')})&fields=status,summary"
+    response.issues.each_with_object({}) do |issue, lookup|
+      lookup[issue["key"]] = issue
+    end
+  end
+
   def first_parents commits, start_sha
     known_commits = commits.each_with_object({}) {|c, h| h[c.sha] = c}
     remaining_shas = [start_sha]

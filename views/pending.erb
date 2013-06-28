@@ -12,6 +12,10 @@
     font-size: smaller;
     font-family: monospace;
   }
+
+  .verified {
+    background-color: #5BF766;
+  }
 </style>
 
 <h2>Pending Merge Overview</h2>
@@ -25,11 +29,19 @@
     </tr>
   </thead>
   <tbody>
-<% Commit.issues(@commits).each do |issue| %>
-    <tr>
-      <td><%= issue %></td>
-      <td>unknown</td>
-      <td><%= "Description of #{issue}" %></td>
+<%
+   Commit.issues(@commits).each do |issue_key|
+    issue = @issues[issue_key]["fields"]
+    state_css = issue["status"]["name"] == "QA Verified" ? "verified" : "unverified"
+%>
+    <tr class="<%= state_css %>">
+      <td>
+        <%= issue_key %></td>
+      <td>
+        <img src="<%= issue["status"]["iconUrl"] %>">
+        <%= issue["status"]["name"] %>
+      </td>
+      <td><%= issue["summary"] %></td>
     </tr>
 <% end %>
   </tbody>
