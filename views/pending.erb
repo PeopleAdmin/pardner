@@ -16,6 +16,11 @@
   .verified {
     background-color: #5BF766;
   }
+
+  i.icon-external-link {
+    text-decoration: none;
+    font-size: smaller;
+  }
 </style>
 
 <h2>Pending Merge Overview</h2>
@@ -37,7 +42,9 @@ Items that will be moved into <%= @from %> from <%= @to %>
 %>
     <tr class="<%= state_css %>">
       <td>
-        <%= issue_key %></td>
+        <%= issue_key %>
+        <a href="<%= "#{settings.jira_url}/browse/#{issue_key}" %>" target="_blank" title="Open in JIRA"><i class="icon-external-link"></i></a>
+      </td>
       <td>
         <img src="<%= issue["status"]["iconUrl"] %>">
         <%= issue["status"]["name"] %>
