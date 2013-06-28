@@ -95,7 +95,9 @@ end
 
 get '/:org/:repo/pending/:from/:to' do
   repo = "#{params[:org]}/#{params[:repo]}"
-  @commits = ondeck.pending repo, params[:from], params[:to]
+  @from = params[:from]
+  @to = params[:to]
+  @commits = ondeck.pending repo, @from, @to
   @issues = ondeck.issue_details Commit.issues(@commits)
   erb :pending
 end
