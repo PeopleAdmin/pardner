@@ -38,7 +38,7 @@ Items that will be moved into <%= @from %> from <%= @to %>
 <%
    Commit.issues(@commits).each do |issue_key|
     issue = @issues[issue_key]["fields"]
-    state_css = issue["status"]["name"] == "QA Verified" ? "verified" : "unverified"
+    state_css = ["Closed", "QA Verified"].include?(issue["status"]["name"]) ? "verified" : "unverified"
 %>
     <tr class="<%= state_css %>">
       <td>
