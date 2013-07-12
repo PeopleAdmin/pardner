@@ -1,6 +1,6 @@
 require './commit.rb'
 
-class OnDeck
+class Pardner
 
   def initialize(user, options = {})
     @user = user

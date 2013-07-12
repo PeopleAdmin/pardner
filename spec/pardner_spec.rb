@@ -1,6 +1,6 @@
-require './on_deck.rb'
+require './pardner.rb'
 
-describe OnDeck do
+describe Pardner do
   describe "#first_parents" do
     it "returns the list of commits from the mainline" do
       APP_ROOT = File.expand_path(File.dirname(File.expand_path(__FILE__)) + "/..")
@@ -36,7 +36,7 @@ b1253933b77ff0769d35b73fe9765b47750608c9
 556a171365dd30cf7cc7d447fe80bcedc17a8fc2
       ".split("\n").map{|l| l.strip}.reject{|l| l.empty?}
 
-      actual = OnDeck.new.first_parents(commits, commits.first.sha)
+      actual = Pardner.new.first_parents(commits, commits.first.sha)
       actual.map(&:sha).should == expected_first_parents
     end
   end
@@ -82,12 +82,12 @@ b1253933b77ff0769d35b73fe9765b47750608c9
     end
 
     it "identifies first parents" do
-      first_parents = OnDeck.new.first_parents all, all.last.sha
+      first_parents = Pardner.new.first_parents all, all.last.sha
       first_parents.map(&:sha).should == %w(A B D F H J)
     end
 
     it "groups commits by their first parent" do
-      grouped = OnDeck.new.grouped_commits all, all.last.sha
+      grouped = Pardner.new.grouped_commits all, all.last.sha
       grouped.map(&:sha).should == %w(A B D F H J)
       grouped[0].contributing_commits.map(&:sha).should == []
       grouped[1].contributing_commits.map(&:sha).should == %w(C)

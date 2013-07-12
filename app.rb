@@ -3,7 +3,7 @@ require 'bundler'
 Bundler.require
 require './db.rb'
 require './commit.rb'
-require './on_deck.rb'
+require './pardner.rb'
 
 load '.settings' if File.exists? '.settings'
 
@@ -97,14 +97,14 @@ get '/:org/:repo/pending/:from/:to' do
   repo = "#{params[:org]}/#{params[:repo]}"
   @from = params[:from]
   @to = params[:to]
-  @commits = ondeck.pending repo, @from, @to
-  @issues = ondeck.issue_details Commit.issues(@commits)
+  @commits = pardner.pending repo, @from, @to
+  @issues = pardner.issue_details Commit.issues(@commits)
   erb :pending
 end
 
 get '/status/:identifier' do
   content_type :json
-  MultiJson.dump(ondeck.status(params[:identifier]), pretty: true)
+  MultiJson.dump(pardner.status(params[:identifier]), pretty: true)
 end
 
 get '/auth/github/callback' do
@@ -131,8 +131,8 @@ end
 
 private
 
-def ondeck
-  @ondeck ||= OnDeck.new current_user, jira_consumer: jira_consumer
+def pardner
+  @pardner ||= Pardner.new current_user, jira_consumer: jira_consumer
 end
 
 def jira_consumer
