@@ -13,10 +13,6 @@ class Pardner
     grouped_commits all_commits, all_commits.last.sha
   end
 
-  def status identifier
-    jira_request "/rest/api/2/issue/#{identifier}?expand=changelog"
-  end
-
   def issue_details *issues
     response = jira_request "/rest/api/2/search?jql=id%20in%20(#{issues.join(',')})&fields=status,summary,labels"
     response.issues.each_with_object({}) do |issue, lookup|

@@ -104,7 +104,7 @@ end
 
 get '/status/:identifier' do
   content_type :json
-  MultiJson.dump(pardner.status(params[:identifier]), pretty: true)
+  MultiJson.dump(pardner.issue_details(params[:identifier]), pretty: true)
 end
 
 get '/auth/github/callback' do
