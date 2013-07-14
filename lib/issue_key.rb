@@ -16,6 +16,10 @@ class IssueKey
     "#<IssueKey #{to_s}>"
   end
 
+  def self.parse(key)
+    new(*key.match(/([A-Z]{2})-(\d+)/).captures)
+  end
+
   def <=>(other)
     return nil unless other.is_a?(IssueKey)
     cmp = @prefix <=> other.prefix

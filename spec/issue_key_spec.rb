@@ -7,6 +7,12 @@ describe IssueKey do
     key.number.should == 12345
   end
 
+  it "can be created from a formatted key" do
+    key = IssueKey.parse("IK-12345")
+    key.prefix.should == "IK"
+    key.number.should == 12345
+  end
+
   specify "#to_s returns the formatted key" do
     key = IssueKey.new("IK", "12345")
     key.to_s.should == "IK-12345"
