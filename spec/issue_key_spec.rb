@@ -11,4 +11,11 @@ describe IssueKey do
     key = IssueKey.new("IK", "12345")
     key.to_s.should == "IK-12345"
   end
+
+  describe "sorting" do
+    it "based on key before number" do
+      keys = %w(PA-1234 IF-99999 IF-1000 PA-923).map{|k| IssueKey.parse(k)}
+      keys.sort.map(&:to_s).should == %w[IF-1000 IF-99999 PA-923 PA-1234]
+    end
+  end
 end

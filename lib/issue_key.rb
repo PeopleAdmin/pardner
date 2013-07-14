@@ -19,7 +19,7 @@ class IssueKey
   def <=>(other)
     return nil unless other.is_a?(IssueKey)
     cmp = @prefix <=> other.prefix
-    return unless cmp == 0
+    return cmp unless cmp == 0
     @number <=> other.number
   end
 
