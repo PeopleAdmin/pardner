@@ -14,10 +14,10 @@ class ChangesOutput
   end
 
   def issues
-    []
+    @issues
   end
 
   def commits
-    []
+    @commits
   end
 end

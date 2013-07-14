@@ -3,14 +3,12 @@ require 'bundler'
 Bundler.require
 $LOAD_PATH.unshift("lib")
 require './db.rb'
-require './commit.rb'
-require './pardner.rb'
 
+require 'github'
 require 'web/changes_input'
 require 'web/changes_output'
 
 require 'commit_augmenter'
-require 'issue_finder'
 
 load '.settings' if File.exists? '.settings'
 
@@ -103,8 +101,8 @@ end
 get '/:org/:repo/changes/:base/:target' do
   input = ChangesInput.new(params)
   commits = github.changes input.repo, input.base, input.target
-  CommitAugmenter.new(db).augment(commits)
-  issues = jira.issue_details IssueFinder.new.find_issues(commits)
+  commits = CommitAugmenter.new(db).augment(commits)
+  issues = jira.issue_details commits.flat_map(&:issues)
   @output = ChangesOutput.new(input, commits, issues)
   erb :changes
 end

@@ -64,10 +64,10 @@ Items that will be moved into <%= @output.target %> from <%= @output.base %>
 <h4>Commits</h4>
 <%
   @output.commits.each do |commit|
-    commit_type = commit.parents.length > 1 ? :merge : :direct
+    commit_type = commit.merge? ? :merge : :direct
 %>
 <div class="row-fluid">
-  <div class="span8 <%= commit.all_issues.map{|c| "fixes-#{c}"}.join(' ') %>">
+  <div class="span8 <%= commit.issues.map{|c| "fixes-#{c}"}.join(' ') %>">
     <span class="commit-sha"><%= commit.short_sha %></span>
 <% if commit_type == :merge %>
       <a href="#commits-<%= commit.short_sha %>" data-toggle="collapse"><i class="icon-code-fork"></i></a>
@@ -82,7 +82,7 @@ Items that will be moved into <%= @output.target %> from <%= @output.base %>
   </div>
   <div class="span4">
     <ul class="commit-issues inline">
-<% commit.all_issues.each do |issue| %>
+<% commit.issues.each do |issue| %>
       <li><%= issue %></li>
 <% end %>
     </ul>
