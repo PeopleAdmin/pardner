@@ -9,6 +9,9 @@ gem 'omniauth-jira'
 gem 'mongo'
 gem 'bson_ext'
 
-group :development do
+group :development, :test do
+  gem 'pry'
+  gem 'pry-debugger'
   gem 'rspec'
+  gem 'rack-test'
 end
