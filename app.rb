@@ -123,6 +123,12 @@ get '/status/:identifier' do
   MultiJson.dump(pardner.issue_details(params[:identifier]), pretty: true)
 end
 
+get '/:org/:repo/rawcommits/:base/:target' do
+  content_type :json
+  input = ChangesInput.new(params)
+  MultiJson.dump(github.changes(input.repo, input.base, input.target), pretty: true)
+end
+
 get '/auth/github/callback' do
   @user = db.find_or_create_user_by_github_auth request.env['omniauth.auth']
   session["user_id"] = @user.id
