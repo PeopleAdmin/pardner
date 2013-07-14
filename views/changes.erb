@@ -1,0 +1,101 @@
+<style>
+  #commit-list > li {
+    border: solid thin black;
+    margin: 5px;
+  }
+
+  .merge {
+    border: solid thick black;
+  }
+
+  .commit-sha {
+    font-size: smaller;
+    font-family: monospace;
+  }
+
+  .verified {
+    background-color: #5BF766;
+  }
+
+  i.icon-external-link {
+    text-decoration: none;
+    font-size: smaller;
+  }
+</style>
+
+<h2>Pending Merge Overview</h2>
+Items that will be moved into <%= @output.target %> from <%= @output.base %>
+<h3>Issues</h3>
+<table class="table table-condensed table-hover">
+  <thead>
+    <tr>
+      <th>Issue</th>
+      <th>State</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+<%
+   @output.issues.each do |issue|
+    #state_css = ["Closed", "QA Verified"].include?(issue["status"]["name"]) ? "verified" : "unverified"
+%>
+    <tr class="<%= state_css %>">
+      <td>
+        <%= issue_key %>
+        <a href="<%= "#{settings.jira_url}/browse/#{issue_key}" %>" target="_blank" title="Open in JIRA"><i class="icon-external-link"></i></a>
+      </td>
+      <td>
+        <img src="<%= issue["status"]["iconUrl"] %>">
+        <%= issue["status"]["name"] %>
+      </td>
+      <td>
+        <% issue["labels"].each do |label| %>
+          <span class="label"><%= label %></span>
+        <% end %>
+        <%= issue["summary"] %>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<h4>Commits</h4>
+<%
+  @output.commits.each do |commit|
+    commit_type = commit.parents.length > 1 ? :merge : :direct
+%>
+<div class="row-fluid">
+  <div class="span8 <%= commit.all_issues.map{|c| "fixes-#{c}"}.join(' ') %>">
+    <span class="commit-sha"><%= commit.short_sha %></span>
+<% if commit_type == :merge %>
+      <a href="#commits-<%= commit.short_sha %>" data-toggle="collapse"><i class="icon-code-fork"></i></a>
+<% end %>
+<span><%=h commit.subject %></span>
+<% unless commit.body.empty? %>
+    <span><a href="#message-<%= commit.short_sha %>" data-toggle="collapse"><i class="icon-ellipsis-horizontal"></i></a></span>
+    <div id="message-<%= commit.short_sha %>" class="commit-message collapse">
+<pre><%= commit.body %></pre>
+    </div>
+<% end %>
+  </div>
+  <div class="span4">
+    <ul class="commit-issues inline">
+<% commit.all_issues.each do |issue| %>
+      <li><%= issue %></li>
+<% end %>
+    </ul>
+  </div>
+</div>
+<div id="commits-<%= commit.short_sha %>" class="row-fluid collapse">
+<% commit.contributing_commits.each do |hidden_commit| %>
+  <div class="row-fluid">
+    <div class="offset1 span11">
+      <span class="commit-sha"><%= hidden_commit.short_sha %></span>
+      <span class="commit-subject"><%=h hidden_commit.subject %></span>
+    </div>
+  </div>
+<% end %>
+</div>
+<% end %>

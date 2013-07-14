@@ -1,9 +1,16 @@
 require 'rubygems'
 require 'bundler'
 Bundler.require
+$LOAD_PATH.unshift("lib")
 require './db.rb'
 require './commit.rb'
 require './pardner.rb'
+
+require 'web/changes_input'
+require 'web/changes_output'
+
+require 'commit_augmenter'
+require 'issue_finder'
 
 load '.settings' if File.exists? '.settings'
 
@@ -93,6 +100,15 @@ get '/' do
   erb :index
 end
 
+get '/:org/:repo/changes/:base/:target' do
+  input = ChangesInput.new(params)
+  commits = github.changes input.repo, input.base, input.target
+  CommitAugmenter.new(db).augment(commits)
+  issues = jira.issue_details IssueFinder.new.find_issues(commits)
+  @output = ChangesOutput.new(input, commits, issues)
+  erb :changes
+end
+
 get '/:org/:repo/pending/:from/:to' do
   repo = "#{params[:org]}/#{params[:repo]}"
   @from = params[:from]
@@ -130,6 +146,26 @@ get '/logout' do
 end
 
 private
+
+def github
+  @github ||= GitHub.new
+end
+
+class GitHub
+  def changes(repo, base, target)
+    {"commits" => []}
+  end
+end
+
+def jira
+  @jira ||= Jira.new
+end
+
+class Jira
+  def issue_details(issue_keys)
+    []
+  end
+end
 
 def pardner
   @pardner ||= Pardner.new current_user, jira_consumer: jira_consumer
