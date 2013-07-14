@@ -148,13 +148,7 @@ end
 private
 
 def github
-  @github ||= GitHub.new
-end
-
-class GitHub
-  def changes(repo, base, target)
-    {"commits" => []}
-  end
+  @github ||= Github.new current_user
 end
 
 def jira
