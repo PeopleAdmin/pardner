@@ -124,7 +124,7 @@ end
 get '/:org/:repo/rawcommits/:base/:target' do
   content_type :json
   input = ChangesInput.new(params)
-  MultiJson.dump(github.changes(input.repo, input.base, input.target), pretty: true)
+  MultiJson.dump(github.changes(input.repo, input.base, input.target).map(&:data), pretty: true)
 end
 
 get '/auth/github/callback' do
