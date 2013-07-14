@@ -5,6 +5,7 @@ $LOAD_PATH.unshift("lib")
 require './db.rb'
 
 require 'github'
+require 'jira'
 require 'web/changes_input'
 require 'web/changes_output'
 
@@ -118,7 +119,7 @@ end
 
 get '/status/:identifier' do
   content_type :json
-  MultiJson.dump(pardner.issue_details(params[:identifier]), pretty: true)
+  MultiJson.dump(jira.issue_details(params[:identifier]), pretty: true)
 end
 
 get '/:org/:repo/rawcommits/:base/:target' do
@@ -156,21 +157,11 @@ def github
 end
 
 def jira
-  @jira ||= Jira.new
-end
-
-class Jira
-  def issue_details(issue_keys)
-    []
-  end
-end
-
-def pardner
-  @pardner ||= Pardner.new current_user, jira_consumer: jira_consumer
+  @jira ||= Jira.new jira_consumer, current_user
 end
 
 def jira_consumer
-  @consumer ||= OAuth::Consumer.new(
+  OAuth::Consumer.new(
     settings.jira_consumer_key, settings.jira_rsa_key,
     {
       :site => settings.jira_url,

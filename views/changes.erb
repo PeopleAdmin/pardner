@@ -36,8 +36,9 @@ Items that will be moved into <%= @output.target %> from <%= @output.base %>
   </thead>
   <tbody>
 <%
-   @output.issues.each do |issue|
-    #state_css = ["Closed", "QA Verified"].include?(issue["status"]["name"]) ? "verified" : "unverified"
+   @output.issue_keys.each do |issue_key|
+     issue = @output.issue(issue_key)["fields"]
+     state_css = ["Closed", "QA Verified"].include?(issue["status"]["name"]) ? "verified" : "unverified"
 %>
     <tr class="<%= state_css %>">
       <td>
