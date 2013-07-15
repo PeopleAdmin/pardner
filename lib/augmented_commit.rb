@@ -20,8 +20,4 @@ class AugmentedCommit < DelegateClass(Commit)
   def added_issues
 
   end
-
-  def contributing_commits
-    []
-  end
 end

@@ -64,7 +64,7 @@ Items that will be moved into <%= @output.target %> from <%= @output.base %>
 
 <h4>Commits</h4>
 <%
-  @output.commits.each do |commit|
+  @output.mainline_commits.each do |commit|
     commit_type = commit.merge? ? :merge : :direct
 %>
 <div class="row-fluid">
@@ -90,7 +90,7 @@ Items that will be moved into <%= @output.target %> from <%= @output.base %>
   </div>
 </div>
 <div id="commits-<%= commit.short_sha %>" class="row-fluid collapse">
-<% commit.contributing_commits.each do |hidden_commit| %>
+<% @output.contributing_commits(commit).each do |hidden_commit| %>
   <div class="row-fluid">
     <div class="offset1 span11">
       <span class="commit-sha"><%= hidden_commit.short_sha %></span>

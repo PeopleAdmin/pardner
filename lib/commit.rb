@@ -24,7 +24,11 @@ class Commit
   end
 
   def merge?
-    @data[:parents].length > 1
+    parents.length > 1
+  end
+
+  def parents
+    @parent ||= @data[:parents].map{|parent| parent[:sha]}
   end
 
 
