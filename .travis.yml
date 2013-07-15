@@ -4,3 +4,11 @@ before_script: cp .settings.sample .settings
 script: bundle exec rspec
 rvm:
 - 1.9.3
+deploy:
+  provider: heroku
+  api_key:
+  - secure: ! 'F3Nz2W0oSAqxqGUcrCaWzHHu8eVg0nxmHiXyAV06tDbr8sCFSPofJWXiT8M9
+
+      IW/8yCJZKiI/C7XaTF6+Ri1lheq+rJJHws/ASd4Gh5SfhnPkhRvvlQmEd/9X
+
+      vyN2NG6JhdExEckVpejr5glWgxlKdEdcXJBPdxSxEKi+CL1vt5g='
