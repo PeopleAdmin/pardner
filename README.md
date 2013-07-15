@@ -3,4 +3,9 @@ pardner
 
 PeopleAdmin Release Dashboard (ner)
 
-Setup instructions coming soon...
+
+Running Locally
+
+Create a .settings file (`cp .settings.sample .settings`)
+
+`rackup`
