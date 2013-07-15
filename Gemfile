@@ -10,8 +10,6 @@ gem 'mongo'
 gem 'bson_ext'
 
 group :development, :test do
-  gem 'pry'
-  gem 'pry-debugger'
   gem 'rspec'
   gem 'rack-test'
 end
