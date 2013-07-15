@@ -2,13 +2,11 @@ require 'rubygems'
 require 'bundler'
 Bundler.require
 $LOAD_PATH.unshift("lib")
-require './db.rb'
 
+require 'db'
+require 'web'
 require 'github'
 require 'jira'
-require 'web/changes_input'
-require 'web/changes_output'
-
 require 'commit_augmenter'
 
 load '.settings' if File.exists? '.settings'
@@ -33,10 +31,6 @@ use OmniAuth::Builder do
     settings.jira_consumer_key,
     settings.jira_rsa_key,
     :client_options => { :site => settings.jira_url }
-end
-
-def db
-  @db ||= DB.new(ENV['MONGOLAB_URI'])
 end
 
 PUBLIC_URLS = ['/', '/logout', '/auth/failure']
@@ -108,15 +102,6 @@ get '/:org/:repo/changes/:base/:target' do
   erb :changes
 end
 
-get '/:org/:repo/pending/:from/:to' do
-  repo = "#{params[:org]}/#{params[:repo]}"
-  @from = params[:from]
-  @to = params[:to]
-  @commits = pardner.pending repo, @from, @to
-  @issues = pardner.issue_details Commit.issues(@commits)
-  erb :pending
-end
-
 get '/status/:identifier' do
   content_type :json
   MultiJson.dump(jira.issue_details(params[:identifier]), pretty: true)
@@ -151,6 +136,10 @@ get '/logout' do
 end
 
 private
+
+def db
+  @db ||= DB.new(ENV['MONGOLAB_URI'])
+end
 
 def github
   @github ||= Github.new current_user
