@@ -31,6 +31,7 @@ class ChangesOutput
   def mainline_commits
     @mainlines ||=
       begin
+        return [] if @commits.empty?
         remaining_shas = [@commits.last.sha]
         mainlines = []
         while commit_sha = remaining_shas.pop

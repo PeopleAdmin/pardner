@@ -76,6 +76,13 @@ describe ChangesOutput do
     it "is a list of sorted commits (newest first) from the mainline" do
       output.mainline_commits.map(&:sha).should == %w(A B D F H J)
     end
+
+    context "when there are no commits in the changeset" do
+      let (:commits) { [] }
+      it "is an empty list when no commits provided" do
+        output.mainline_commits.should == []
+      end
+    end
   end
 
   describe "#contributing_commits" do
