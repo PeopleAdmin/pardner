@@ -1,3 +1,5 @@
+require 'oauth'
+
 class Jira
   def initialize(consumer, user)
     @consumer = consumer
@@ -5,6 +7,7 @@ class Jira
   end
 
   def issue_details(issues)
+    return [] if issues.nil? || issues.empty?
     response = request "/rest/api/2/search?jql=id%20in%20(#{Array(issues).join(',')})&fields=status,summary,labels"
     response.issues
   end
