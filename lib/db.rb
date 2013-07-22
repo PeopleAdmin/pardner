@@ -31,11 +31,32 @@ class DB
     find_user_by_id user.id
   end
 
+
+  def suppress_issue(repo, commit, issue)
+    # append issue to list of issues. store other data?
+    commits.update({"repo" => repo, "commit" => commit},
+                   {"$push" => {"suppressed_issues" => issue} },
+                   {upsert: true})
+  end
+
   def users
     connection["users"]
   end
 
+  def commits
+    connection["commits"]
+  end
+
+  def reset_db!
+    raise "Resetting the database is not supported in production." if env == "production"
+    connection.collections.each {|c| connection.drop_collection(c.name)}
+  end
+
   private
+
+  def env
+    @env ||= ENV['RACK_ENV'] || 'development'
+  end
 
   def connection
     @connection ||=
@@ -45,7 +66,7 @@ class DB
           client = Mongo::MongoClient.from_uri(@mongo_url)
           client.db db_name
         else
-          Mongo::MongoClient.new.db("test")
+          Mongo::MongoClient.new.db("pardner_#{env}")
         end
       end
   end
