@@ -20,7 +20,7 @@ describe DB do
 
       db.suppress_issue repo, commit, issue
 
-      commit = db.commits.find_one({"repo" => repo, "commit" => commit})
+      commit = db.commits(repo).find_one({"_id" => commit})
       commit.should_not be_nil
       commit["suppressed_issues"].should == ["IS-9876"]
     end

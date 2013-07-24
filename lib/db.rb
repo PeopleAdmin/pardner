@@ -34,7 +34,7 @@ class DB
 
   def suppress_issue(repo, commit, issue)
     # append issue to list of issues. store other data?
-    commits.update({"repo" => repo, "commit" => commit},
+    commits(repo).update({"_id" => commit},
                    {"$push" => {"suppressed_issues" => issue} },
                    {upsert: true})
   end
@@ -43,8 +43,8 @@ class DB
     connection["users"]
   end
 
-  def commits
-    connection["commits"]
+  def commits(repo)
+    connection["commits:#{normalize_repo(repo)}"]
   end
 
   def reset_db!
@@ -76,5 +76,13 @@ class DB
   def scrub_jira_auth_data(auth_data)
     extra = auth_data && auth_data["extra"]
     extra.delete("access_token") if extra
+  end
+
+  def normalize_repo(repo)
+    repo.strip.downcase
+  end
+
+  def normalize_commit(commit)
+    commit.strip.downcase
   end
 end
