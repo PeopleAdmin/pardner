@@ -32,6 +32,13 @@ class DB
   end
 
 
+  def add_issue(repo, commit, issue)
+    # append issue to list of issues. store other data?
+    commits(repo).update({"_id" => commit},
+                   {"$push" => {"added_issues" => issue} },
+                   {upsert: true})
+  end
+
   def suppress_issue(repo, commit, issue)
     # append issue to list of issues. store other data?
     commits(repo).update({"_id" => commit},

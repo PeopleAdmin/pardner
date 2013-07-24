@@ -25,4 +25,18 @@ describe DB do
       commit["suppressed_issues"].should == ["IS-9876"]
     end
   end
+
+  describe "#add_issue" do
+    it "stores the issue to assign to a given commit" do
+      repo = 'example_org/sample_repo'
+      commit = 'a1b2c3d4'
+      issue = 'IS-9876'
+
+      db.add_issue repo, commit, issue
+
+      commit = db.commits(repo).find_one({"_id" => commit})
+      commit.should_not be_nil
+      commit["added_issues"].should == ["IS-9876"]
+    end
+  end
 end
