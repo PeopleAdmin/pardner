@@ -8,7 +8,6 @@ class DB
 
   def find_user_by_id(id)
     user_data = users.find_one "_id" => BSON::ObjectId(id)
-    raise "Unknown user with id #{id}" unless user_data
     User.new user_data
   end
 

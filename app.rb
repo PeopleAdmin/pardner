@@ -53,6 +53,9 @@ helpers do
   def identify_user
     return unless session["user_id"]
     @current_user = db.find_user_by_id session["user_id"]
+    unless @current_user
+      session.delete "user_id"
+    end
   end
 
   def require_github_auth?
