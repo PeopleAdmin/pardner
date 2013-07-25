@@ -31,6 +31,12 @@ class DB
     find_user_by_id user.id
   end
 
+  def commit_info(repo, commit_shas)
+    cursor = commits(repo).find("_id" => {"$in" => commit_shas||[]})
+    cursor.each_with_object({}) { |info, result|
+      result[info["_id"]] = info
+    }
+  end
 
   def add_issue(repo, commit, issue)
     # append issue to list of issues. store other data?
