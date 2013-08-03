@@ -9,6 +9,7 @@
   }
 
   .commit-sha {
+    color: black;
     font-size: smaller;
     font-family: monospace;
   }
@@ -68,7 +69,7 @@ Items that will be moved into <%= @output.base %> from <%= @output.target %>
 %>
 <div class="row-fluid <%= @output.commit_status(commit) %>">
   <div class="span8 <%= commit.issues.map{|c| "fixes-#{c}"}.join(' ') %>">
-    <span class="commit-sha"><%= commit.short_sha %></span>
+    <a href="<%= commit.url %>" class="commit-sha" target="_blank" title="Open in GitHub"><%= commit.short_sha %></a>
 <% if commit_type == :merge %>
       <a href="#commits-<%= commit.short_sha %>" data-toggle="collapse"><i class="icon-code-fork"></i></a>
 <% end %>

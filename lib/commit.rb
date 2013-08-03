@@ -23,6 +23,10 @@ class Commit
     @body ||= message_lines[1..-1].join("\n").lstrip
   end
 
+  def url
+    @data[:html_url]
+  end
+
   def merge?
     parents.length > 1
   end

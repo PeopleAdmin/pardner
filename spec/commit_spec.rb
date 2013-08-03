@@ -7,6 +7,7 @@ describe Commit do
       commit: {
         message: "Make a change\n\nBe positive.\nLook ahead."
       },
+      html_url: "https://github.com/commit/abcdef1234567890",
       parents: [
       ]
     }
@@ -28,6 +29,9 @@ describe Commit do
     end
     specify "body is the message without the first line" do
       commit.body.should == "Be positive.\nLook ahead."
+    end
+    specify "url is the html url" do
+      commit.url.should == "https://github.com/commit/abcdef1234567890"
     end
   end
 
