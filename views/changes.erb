@@ -36,7 +36,9 @@ Items that will be moved into <%= @output.base %> from <%= @output.target %>
 
 <hr>
 
-<h4>Commits</h4>
+<h4>Commits
+  <small>[<a href="<%= @output.diff_link %>" target=_blank title="View file diff on GitHub">full diff</a>]</small>
+</h4>
 <%
   @output.mainline_commits.each do |commit|
     commit_type = commit.merge? ? :merge : :direct
