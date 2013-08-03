@@ -123,6 +123,46 @@ describe ChangesOutput do
     end
   end
 
+  describe "Determining status" do
+    let(:issues) {
+      [
+        {"key" => "PA-1234",  "fields" => {"status" => {"name" => "Open"}}},
+        {"key" => "PA-5678",  "fields" => {"status" => {"name" => "QA Verified"}}},
+        {"key" => "PA-9876",  "fields" => {"status" => {"name" => "Closed"}}},
+      ]
+    }
+
+    describe "#issue_status" do
+      it "returns :verified when the issue is Closed in JIRA" do
+        output.issue_status("PA-9876").should == :verified
+      end
+      it "returns :verified when the issue is QA Verified in JIRA" do
+        output.issue_status("PA-5678").should == :verified
+      end
+      it "returns :unverified when the issue is still open in JIRA" do
+        output.issue_status("PA-1234").should == :unverified
+      end
+      it "raises when the issue when the issue is unknown" do
+        expect { output.issue_status("XX-9999") }.to raise_error /unknown issue/
+      end
+    end
+
+    describe "#commit_status" do
+      it "returns :unverified if it has no related issues" do
+        commit = double("AugmentedCommit", issues: [])
+        output.commit_status(commit).should == :unverified
+      end
+      it "returns :verified if all related issues are verified" do
+        commit = double("AugmentedCommit", issues: ["PA-5678", "PA-9876"])
+        output.commit_status(commit).should == :verified
+      end
+      it "returns :unverified if any related issue is unverified" do
+        commit = double("AugmentedCommit", issues: ["PA-1234", "PA-5678"])
+        output.commit_status(commit).should == :unverified
+      end
+    end
+  end
+
 
   private
 

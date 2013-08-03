@@ -45,6 +45,19 @@ class ChangesOutput
       end
   end
 
+  def commit_status(commit)
+    return :unverified if commit.issues.empty?
+    all_verified = commit.issues.all?{|issue| issue_status(issue) == :verified}
+    all_verified ? :verified : :unverified
+  end
+
+  def issue_status(issue_key)
+    issue = self.issue(issue_key.to_s)
+    raise "Cannot determine status for unknown issue #{issue_key}" unless issue
+    status = issue["fields"]["status"]["name"]
+    ["Closed", "QA Verified"].include?(status) ? :verified : :unverified
+  end
+
   private
 
   def issue_lookup

@@ -38,9 +38,8 @@ Items that will be moved into <%= @output.base %> from <%= @output.target %>
 <%
    @output.issue_keys.each do |issue_key|
      issue = @output.issue(issue_key)["fields"]
-     state_css = ["Closed", "QA Verified"].include?(issue["status"]["name"]) ? "verified" : "unverified"
 %>
-    <tr class="<%= state_css %>">
+    <tr class="<%= @output.issue_status(issue_key) %>">
       <td>
         <%= issue_key %>
         <a href="<%= "#{settings.jira_url}/browse/#{issue_key}" %>" target="_blank" title="Open in JIRA"><i class="icon-external-link"></i></a>
@@ -67,7 +66,7 @@ Items that will be moved into <%= @output.base %> from <%= @output.target %>
   @output.mainline_commits.each do |commit|
     commit_type = commit.merge? ? :merge : :direct
 %>
-<div class="row-fluid">
+<div class="row-fluid <%= @output.commit_status(commit) %>">
   <div class="span8 <%= commit.issues.map{|c| "fixes-#{c}"}.join(' ') %>">
     <span class="commit-sha"><%= commit.short_sha %></span>
 <% if commit_type == :merge %>
