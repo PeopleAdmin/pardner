@@ -1,0 +1,27 @@
+h1 a:hover {
+  text-decoration: none;
+}
+
+#commit-list > li {
+  border: solid thin black;
+  margin: 5px;
+}
+
+.merge {
+  border: solid thick black;
+}
+
+.commit-sha {
+  color: black;
+  font-size: smaller;
+  font-family: monospace;
+}
+
+.verified {
+  background-color: #5BF766;
+}
+
+i.icon-external-link {
+  text-decoration: none;
+  font-size: smaller;
+}
