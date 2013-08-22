@@ -61,7 +61,7 @@ class ChangesOutput
   def diff_link
     #TODO: This URL is probably in the API response - better to get it from there.
     # At the very least, we should do some URL encoding.
-    "https://github.com/PeopleAdmin/hr_suite/compare/#{base}...#{target}#files_bucket"
+    "https://github.com/PeopleAdmin/portals/compare/#{base}...#{target}#files_bucket"
   end
 
   private
