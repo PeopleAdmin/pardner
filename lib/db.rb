@@ -31,11 +31,45 @@ class DB
     find_user_by_id user.id
   end
 
+  def commit_info(repo, commit_shas)
+    cursor = commits(repo).find("_id" => {"$in" => commit_shas||[]})
+    cursor.each_with_object({}) { |info, result|
+      result[info["_id"]] = info
+    }
+  end
+
+  def add_issue(repo, commit, issue)
+    # append issue to list of issues. store other data?
+    commits(repo).update({"_id" => commit},
+                   {"$push" => {"added_issues" => issue} },
+                   {upsert: true})
+  end
+
+  def suppress_issue(repo, commit, issue)
+    # append issue to list of issues. store other data?
+    commits(repo).update({"_id" => commit},
+                   {"$push" => {"suppressed_issues" => issue} },
+                   {upsert: true})
+  end
+
   def users
     connection["users"]
   end
 
+  def commits(repo)
+    connection["commits:#{normalize_repo(repo)}"]
+  end
+
+  def reset_db!
+    raise "Resetting the database is not supported in production." if env == "production"
+    connection.collections.each {|c| connection.drop_collection(c.name)}
+  end
+
   private
+
+  def env
+    @env ||= ENV['RACK_ENV'] || 'development'
+  end
 
   def connection
     @connection ||=
@@ -45,7 +79,7 @@ class DB
           client = Mongo::MongoClient.from_uri(@mongo_url)
           client.db db_name
         else
-          Mongo::MongoClient.new.db("test")
+          Mongo::MongoClient.new.db("pardner_#{env}")
         end
       end
   end
@@ -55,5 +89,13 @@ class DB
   def scrub_jira_auth_data(auth_data)
     extra = auth_data && auth_data["extra"]
     extra.delete("access_token") if extra
+  end
+
+  def normalize_repo(repo)
+    repo.strip.downcase
+  end
+
+  def normalize_commit(commit)
+    commit.strip.downcase
   end
 end

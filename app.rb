@@ -99,7 +99,7 @@ end
 get '/:org/:repo/changes/:base/:target' do
   input = ChangesInput.new(params)
   commits = github.changes input.repo, input.base, input.target
-  commits = CommitAugmenter.new(db).augment(commits)
+  commits = CommitAugmenter.new(db, input.repo).augment(commits)
   issues = jira.issue_details commits.flat_map(&:issues)
   @output = ChangesOutput.new(input, commits, issues)
   erb :changes

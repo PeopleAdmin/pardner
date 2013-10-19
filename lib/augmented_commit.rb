@@ -14,10 +14,10 @@ class AugmentedCommit < DelegateClass(Commit)
   end
 
   def suppressed_issues
-
+    @suppressed_issues ||= Set.new
   end
 
   def added_issues
-
+    @added_issues ||= Set.new
   end
 end
