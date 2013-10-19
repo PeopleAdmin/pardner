@@ -8,6 +8,10 @@ class User
     object_id.to_s if object_id
   end
 
+  def github_uid
+    get "github", "uid"
+  end
+
   def name
     get "github", "info", "name"
   end

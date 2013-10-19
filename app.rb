@@ -18,6 +18,7 @@ if ENV['GITHUB_CLIENT_ID']
   set :jira_rsa_key, OpenSSL::PKey::RSA.new(ENV['JIRA_RSA_PEM'])
   set :jira_url, ENV['JIRA_URL']
   set :session_secret, ENV['SESSION_SECRET']
+  set :admin_uids, (ENV['ADMIN_UIDS']||'').split(',').map(&:strip)
 end
 
 use Rack::Session::Cookie, key: 'app.session',
@@ -39,6 +40,7 @@ before do
   identify_user
   authenticate_with_github! if require_github_auth?
   authenticate_with_jira! if require_jira_auth?
+  halt(403, "You do not have rights to this page") if require_admin? && !admin?
 end
 
 helpers do
@@ -58,6 +60,10 @@ helpers do
     end
   end
 
+  def admin?
+    current_user && settings.admin_uids.include?(current_user.github_uid)
+  end
+
   def require_github_auth?
     access_without_github_auth = PUBLIC_URLS +
       ['/auth/github', '/auth/github/callback']
@@ -68,6 +74,10 @@ helpers do
     access_without_jira_auth = PUBLIC_URLS +
       ['/auth/github', '/auth/github/callback', '/auth/JIRA', '/auth/JIRA/callback']
     !access_without_jira_auth.include? request.path_info
+  end
+
+  def require_admin?
+    request.path_info =~ %r{^/admin}
   end
 
   def github_authenticated?
@@ -125,6 +135,11 @@ end
 get '/auth/JIRA/callback' do
   db.update_user_jira_auth current_user, request.env['omniauth.auth']
   redirect "/"
+end
+
+get '/admin' do
+  content_type 'text/plain'
+  "This is the protected admin page"
 end
 
 # Probably need these....
