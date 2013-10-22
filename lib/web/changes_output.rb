@@ -1,10 +1,19 @@
 require 'issue_key'
 
 class ChangesOutput
-  def initialize(input, commits, issues)
+  def initialize(input, alerts, commits, issues)
     @input = input
     @commits = commits
     @issues = issues
+    @alerts = alerts
+  end
+
+  def alerts
+    @alerts
+  end
+
+  def has_alerts?
+    @alerts.keys.length > 0
   end
 
   def target

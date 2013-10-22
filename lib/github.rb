@@ -6,8 +6,7 @@ class Github
   end
 
   def changes(repo, base, target)
-    response = client.compare repo, base, target
-    response.commits.map{|details| Commit.new(details)}
+    client.compare repo, base, target
   end
 
   private

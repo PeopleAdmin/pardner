@@ -108,11 +108,29 @@ end
 
 get '/:org/:repo/changes/:base/:target' do
   input = ChangesInput.new(params)
-  commits = github.changes input.repo, input.base, input.target
-  commits = CommitAugmenter.new(db, input.repo).augment(commits)
+  changes = github.changes input.repo, input.base, input.target
+  commits = CommitAugmenter.new(db, input.repo).augment(changes.commits.map{|c| Commit.new(c)})
   issues = jira.issue_details commits.flat_map(&:issues)
-  @output = ChangesOutput.new(input, commits, issues)
+  alerts = find_alerts changes
+  @output = ChangesOutput.new(input, alerts, commits, issues)
   erb :changes
+end
+
+def find_alerts(changes)
+  # Load these from database
+  alert_patterns = [
+    ["Gem changes", "^Gemfile"],
+    ["Database changes", "/?db/"]
+  ]
+
+  all_files = changes.files.map(&:filename)
+
+  alerts = {}
+  alert_patterns.each do |name, pattern|
+    matches = all_files.grep(Regexp.new(pattern))
+    alerts[name] = matches unless matches.empty?
+  end
+  alerts
 end
 
 get '/status/:identifier' do

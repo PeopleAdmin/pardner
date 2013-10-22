@@ -29,7 +29,7 @@ describe ChangesOutput do
  
   let(:input) { nil }
   let(:output) {
-    ChangesOutput.new(input, commits, issues)
+    ChangesOutput.new(input, nil ,commits, issues)
   }
 
   # Scenarios to cover:

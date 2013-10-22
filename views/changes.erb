@@ -1,5 +1,21 @@
 <h2>Pending Merge Overview</h2>
 Items that will be moved into <%= @output.base %> from <%= @output.target %>
+
+<% if @output.has_alerts? %>
+<div class=well>
+  <div class=alert><i class="icon-warning-sign"></i> The following changes may need special attention:</div>
+  <dl class=dl-horizontal>
+    <% @output.alerts.each do |heading, files| %>
+    <dt><%= heading %></dt>
+    <% files.each do |file| %>
+    <dd><%= file %></dd>
+    <% end %>
+    <% end %>
+  </dl>
+</div>
+<% end %>
+
+
 <h3>Issues</h3>
 <table class="table table-condensed table-hover">
   <thead>
