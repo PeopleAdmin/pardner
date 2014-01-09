@@ -11,9 +11,10 @@ class CommitAugmenter
     commits.map {|commit|
       AugmentedCommit.new(commit).tap {|c|
         info = infos_by_commit[c.sha]
-        next unless info
-        c.suppressed_issues.merge info["suppressed_issues"] || []
-        c.added_issues.merge info["added_issues"] || []
+        if info
+          c.suppress(info["suppressed_issues"])
+          c.addend(info["added_issues"])
+        end
       }
     }
   end

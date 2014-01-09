@@ -24,12 +24,12 @@ describe CommitAugmenter do
       end
 
       augmented = augmenter.augment(commits)
-      augmented[0].suppressed_issues.should include("EX-3333")
-      augmented[0].suppressed_issues.should_not include("EX-2222")
+      augmented[0].suppressed_issues.should include(IssueKey.parse "EX-3333")
+      augmented[0].suppressed_issues.should_not include(IssueKey.parse "EX-2222")
 
-      augmented[1].suppressed_issues.should include("EX-2222")
-      augmented[1].suppressed_issues.should include("EX-4444")
-      augmented[1].suppressed_issues.should_not include("EX-3333")
+      augmented[1].suppressed_issues.should include(IssueKey.parse "EX-2222")
+      augmented[1].suppressed_issues.should include(IssueKey.parse "EX-4444")
+      augmented[1].suppressed_issues.should_not include(IssueKey.parse "EX-3333")
     end
 
     it "attaches the list of issues manually added for each commit" do
@@ -42,12 +42,12 @@ describe CommitAugmenter do
       end
 
       augmented = augmenter.augment(commits)
-      augmented[0].added_issues.should include("EX-3333")
-      augmented[0].added_issues.should_not include("EX-2222")
+      augmented[0].added_issues.should include(IssueKey.parse "EX-3333")
+      augmented[0].added_issues.should_not include(IssueKey.parse "EX-2222")
 
-      augmented[1].added_issues.should include("EX-2222")
-      augmented[1].added_issues.should include("EX-4444")
-      augmented[1].added_issues.should_not include("EX-3333")
+      augmented[1].added_issues.should include(IssueKey.parse "EX-2222")
+      augmented[1].added_issues.should include(IssueKey.parse "EX-4444")
+      augmented[1].added_issues.should_not include(IssueKey.parse "EX-3333")
     end
   end
 
