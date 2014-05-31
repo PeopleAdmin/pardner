@@ -12,6 +12,6 @@ class Github
   private
 
   def client
-    @client ||= Octokit::Client.new(oauth_token: @user.github_token)
+    @client ||= Octokit::Client.new(access_token: @user.github_token)
   end
 end
