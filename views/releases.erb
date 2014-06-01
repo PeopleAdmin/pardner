@@ -1,0 +1,6 @@
+<h2>Releases</h2>
+  <% @tags.each do |release| %>
+<div class="row-fluid">
+  <div class="span8"><a href="<%= release[1] %>"><%= release[0].strftime("%B %d, %Y") %></a></div>
+</div>
+  <% end %>

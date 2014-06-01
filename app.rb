@@ -116,6 +116,26 @@ get '/:org/:repo/changes/:base/:target' do
   erb :changes
 end
 
+get '/:org/:repo/releases' do
+  org = params[:org]
+  repo = params[:repo]
+  tags = github.tags "#{org}/#{repo}"
+
+  release_tags = tags.select{|t| t.name.match /^release_/}
+  @tags = release_tags.map {|tag|
+    _, year, month, day = tag.name.split('_')
+    date = DateTime.new(year.to_i, month.to_i, day.to_i)
+    [date, tag.name, tag]
+  }.sort.reverse.each_cons(2).map{|target, base|
+    [
+      target[0], #date
+      "/#{org}/#{repo}/changes/#{base[1]}/#{target[1]}",
+      base, target
+    ]
+  }
+  erb :releases
+end
+
 def find_alerts(changes)
   # Load these from database
   alert_patterns = [
