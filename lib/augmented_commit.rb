@@ -11,6 +11,7 @@ class AugmentedCommit < DelegateClass(Commit)
     @detected_issues ||= Set.new(
       __getobj__.message.
         scan(/(PA)[-\s_]*(\d+)/i).
+        select{|parts| parts[1] != "7"}.
         map{|parts| IssueKey.new(*parts)}
     )
   end
