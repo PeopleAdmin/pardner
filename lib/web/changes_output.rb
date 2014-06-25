@@ -62,7 +62,7 @@ class ChangesOutput
 
   def issue_status(issue_key)
     issue = self.issue(issue_key.to_s)
-    raise "Cannot determine status for unknown issue #{issue_key}" unless issue
+    return :unverified unless issue
     status = issue["fields"]["status"]["name"]
     ["Closed", "QA Verified"].include?(status) ? :verified : :unverified
   end

@@ -142,8 +142,8 @@ describe ChangesOutput do
       it "returns :unverified when the issue is still open in JIRA" do
         output.issue_status("PA-1234").should == :unverified
       end
-      it "raises when the issue when the issue is unknown" do
-        expect { output.issue_status("XX-9999") }.to raise_error /unknown issue/
+      it "returns :unverified when the issue when the issue is unknown" do
+        output.issue_status("XX-9999").should  == :unverified
       end
     end
 
